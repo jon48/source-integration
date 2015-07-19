@@ -344,6 +344,7 @@ endif; ?></td>
 		$t_changesets = array();
 
 		while( count( $s_parents ) > 0 && $s_counter < 200 ) {
+			$s_counter++;
 			$t_commit_id = array_shift( $s_parents );
 
 			echo "Retrieving $t_commit_id ... ";
