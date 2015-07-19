@@ -128,6 +128,12 @@ class SourceGithubPlugin extends MantisSourcePlugin {
 		} else {
 			$t_master_branch = 'master';
 		}
+		
+		if ( isset( $p_repo->info['accept_only_master'] ) ) {
+			$t_accept_only_master = $p_repo->info['accept_only_master'];
+		} else {
+			$t_accept_only_master = OFF;
+		}
 ?>
 <tr <?php echo helper_alternate_class() ?>>
 <td class="category"><?php echo plugin_lang_get( 'hub_username' ) ?></td>
@@ -161,6 +167,10 @@ endif; ?></td>
 <td class="category"><?php echo plugin_lang_get( 'master_branch' ) ?></td>
 <td><input name="master_branch" maxlength="250" size="40" value="<?php echo string_attribute( $t_master_branch ) ?>"/></td>
 </tr>
+<tr <?php echo helper_alternate_class() ?>>
+<td class="category"><?php echo plugin_lang_get( 'accept_only_master' ) ?></td>
+<td><input name="accept_only_master" type="checkbox" <?php echo (ON == $t_accept_only_master ? 'checked="checked"' : '') ?>/></td>
+</tr>
 <?php
 	}
 
@@ -170,6 +180,7 @@ endif; ?></td>
 		$f_hub_app_client_id = gpc_get_string( 'hub_app_client_id' );
 		$f_hub_app_secret = gpc_get_string( 'hub_app_secret' );
 		$f_master_branch = gpc_get_string( 'master_branch' );
+		$f_accept_only_master = gpc_get_bool( 'accept_only_master' );
 
 		if ( !preg_match( '/^(\*|[a-zA-Z0-9_\., -]*)$/', $f_master_branch ) ) {
 			plugin_error( self::ERROR_INVALID_PRIMARY_BRANCH );
@@ -180,6 +191,7 @@ endif; ?></td>
 		$p_repo->info['hub_app_client_id'] = $f_hub_app_client_id;
 		$p_repo->info['hub_app_secret'] = $f_hub_app_secret;
 		$p_repo->info['master_branch'] = $f_master_branch;
+		$p_repo->info['accept_only_master'] = $f_accept_only_master;
 
 		return $p_repo;
 	}
@@ -342,6 +354,16 @@ endif; ?></td>
 		}
 
 		$t_changesets = array();
+
+		$t_branch = $p_repo->info['master_branch'];
+		if($p_repo->info['accept_only_master']
+				&& !is_blank( $t_branch )
+				&& $t_branch != '*'
+				&& $p_branch != ''
+		) {
+			$t_branches = array_map( 'trim', explode( ',', $t_branch ) );
+			if(!in_array($p_branch, $t_branches)) return $t_changesets;;
+		}
 
 		while( count( $s_parents ) > 0 && $s_counter < 200 ) {
 			$s_counter++;

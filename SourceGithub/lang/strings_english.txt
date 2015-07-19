@@ -26,3 +26,5 @@ $s_plugin_SourceGithub_oauth_authorization = 'GitHub OAuth Authorization';
 $s_plugin_SourceGithub_back_repo = 'Back to Repository';
 
 $s_plugin_SourceGithub_error_invalid_branch = 'Invalid character in Primary Branch';
+
+$s_plugin_SourceGithub_accept_only_master = 'Accept only from Primary Branches';
